@@ -36,69 +36,53 @@ public class SecurityConfiguration {
 
     @Autowired
     private JWTFilter jwtFilter;
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Allow requests only from your frontend's origin (localhost:5173)
-        configuration
-                .setAllowedOrigins(List.of("http://localhost:5173",
-                        "https://investment-portfolio-tracker-frontend", "http://localhost:3000"));
+        // ✅ Allow your production and local origins
+        configuration.setAllowedOrigins(List.of(
+                "https://investo-frontend.netlify.app",
+                "http://localhost:5173",
+                "http://localhost:3000"
+        ));
 
-        // Allow common HTTP methods
+        // ✅ Allow all methods (so Vue can make any request) this is main thig
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
-        // Allow all headers (you can restrict this to specific headers if needed)
+        // ✅ Allow all headers (especially Authorization)
         configuration.setAllowedHeaders(List.of("*"));
 
-        // Allow credentials (cookies, Authorization headers, etc.) to be included in
-        // requests
+        // ✅ Allow credentials (Bearer tokens, etc.)
         configuration.setAllowCredentials(true);
 
-        // Apply this configuration to all paths
+        // ✅ Apply to all paths
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
     }
 
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                // Disable CSRF protection (typically okay for stateless REST APIs)
                 .csrf(AbstractHttpConfigurer::disable)
-
-                // Enable CORS with default configuration (will use corsConfigurationSource
-                // bean)
                 .cors(Customizer.withDefaults())
-
-                // Enable HTTP Basic authentication (not often used in production, but okay for
-                // testing or simple APIs)
-                .httpBasic(Customizer.withDefaults())
-
-                // Configure session management to be stateless (no HTTP session will be created
-                // or used)
+                // ❌ disable default basic authentication popup
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // Authorization rules:
                 .authorizeHttpRequests(auth -> auth
-
-                        // Allow anyone to access /auth/register and /auth/login
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
-
-                        // Only allow users with the "ADMIN" role to access /admin/users
-                        .requestMatchers("/admin/users").hasRole("ADMIN")
-
-                        // All other requests must be authenticated
-                        .anyRequest().authenticated())
-
-                // Add custom JWT filter before the default UsernamePasswordAuthenticationFilter
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-
-                // Build and return the configured SecurityFilterChain
                 .build();
     }
+
+
 
     // @Bean
     // public SecurityFilterChain securityFilterChain(HttpSecurity http) throws
