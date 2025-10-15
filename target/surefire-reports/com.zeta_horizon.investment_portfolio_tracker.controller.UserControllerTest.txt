@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.zeta_horizon.investment_portfolio_tracker.controller.UserControllerTest
--------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.82 s -- in com.zeta_horizon.investment_portfolio_tracker.controller.UserControllerTest
