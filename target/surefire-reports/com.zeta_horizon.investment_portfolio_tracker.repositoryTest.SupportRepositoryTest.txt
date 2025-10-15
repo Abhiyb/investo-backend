@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.zeta_horizon.investment_portfolio_tracker.repositoryTest.SupportRepositoryTest
+-------------------------------------------------------------------------------
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.115 s -- in com.zeta_horizon.investment_portfolio_tracker.repositoryTest.SupportRepositoryTest
